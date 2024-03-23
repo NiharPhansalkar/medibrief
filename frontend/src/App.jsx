@@ -3,6 +3,7 @@ import NameSection from "./components/NameSection";
 import IntroSection from "./components/IntroSection";
 import JohnSnow from "./components/JohnSnow";
 import Summarization from "./components/Summarization";
+import Team from "./components/Team";
 
 const App = () => {
   return(
@@ -17,8 +18,11 @@ const App = () => {
       <div className="bg-gray-200 h-full flex items-center">
         <JohnSnow />
       </div>
-      <div className="bg-white-200 flex items-center">
+      <div className="bg-white-200 h-full flex items-center">
         <Summarization />
+      </div>
+      <div className="bg-gray-200 flex items-center">
+        <Team />
       </div>
     </>
   );
