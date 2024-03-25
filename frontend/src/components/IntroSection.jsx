@@ -3,7 +3,7 @@ import MedicalImage from "../assets/medical_image1.jpg";
 
 const IntroSection = () => {
   return (
-    <div className="flex flex-row justify-evenly w-full p-4 name-section">
+    <div className="flex flex-row justify-evenly w-full p-4 name-section"  id="introduction">
       <div className="flex flex-col justify-center items-start w-[50%] mx-10">
         <h2 className="font-medium text-6xl my-1 font-lilitaOne">AI IN USE: Natural Language Processing</h2>
         <p className="text-sky-600 my-[8px] text-2xl">An efficient medical text summarizer</p>
