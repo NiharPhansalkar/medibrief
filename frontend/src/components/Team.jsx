@@ -1,11 +1,12 @@
 import "../styles/nameSectionStyles.css";
+import Ojaswini from "../assets/ojaswini.jpeg";
 import React from 'react';
 
 const TeamMember = ({ name, description, imageUrl }) => {
   return (
     <div>
     <div className="max-w-sm rounded-md overflow-hidden shadow-lg">
-      <img className="w-full" src={imageUrl} alt={name} />
+      <img className="w-full h-[20rem]" src={imageUrl} alt={name} />
       <div className="px-6 py-4 bg-gray-50">
         <div className="font-bold text-xl mb-2">{name}</div>
         <p className="text-gray-700 text-base">{description}</p>
@@ -35,7 +36,7 @@ const OurTeam = () => {
     {
       name: 'Ojaswini Kohale',
       description: '',
-      imageUrl: '',
+      imageUrl: Ojaswini,
     },
   ];
 
