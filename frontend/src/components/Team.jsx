@@ -42,7 +42,7 @@ const OurTeam = () => {
 
   return (
     <>
-    <section className="text-gray-700 body-font mx-20">
+    <section className="text-gray-700 body-font mx-20" id="team">
       <div className="container px-5 py-24 mx-auto">
         <h1 className="text-4xl font-bold font-lilitaOne text-center mb-12">Our Team</h1>
         <div className="flex flex-wrap -m-4">
