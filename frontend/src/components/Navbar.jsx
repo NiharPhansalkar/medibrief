@@ -9,7 +9,9 @@ const navigation = [
   { name: 'Product', href: 'summarize', current: false },
   { name: 'Team', href: 'team', current: false },
 ]
-
+function generateRandomKey() {
+  return Math.random().toString(36).substr(2, 9);
+}
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -44,6 +46,7 @@ export default function Navbar() {
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
                       <Link
+                      key={generateRandomKey()}
                         to={item.href}
                         className={classNames(
                           item.current ? 'bg-gray-900 text-white' : 'text-black-300 hover:bg-gray-700 hover:text-white',
