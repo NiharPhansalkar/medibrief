@@ -10,7 +10,7 @@ const Summarization = () => {
         text: inputText
       });
 
-      setSummary(response.data.summary);
+      setSummary(response.data.result);
       setShowSummary(true);
     } catch (error) {
       console.error(error);
@@ -20,12 +20,12 @@ const Summarization = () => {
 
   return (
     <>
-      <div className="flex justify-start justify-items-start items-center flex-col w-full p-5 " id="summarize">
+      <div className="flex justify-start justify-items-start items-center flex-col w-full p-5 h-full" id="summarize">
         <h2 className="font-medium text-6xl font-lilitaOne my-5">SUMMARIZE YOUR TEXT</h2>
         <textarea
           className="border-2 border-blue-500 rounded-md p-2 focus:outline-none my-10"
-          rows={10}
-          cols={50}
+          rows={8}
+          cols={100}
           placeholder="Enter your text here..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
@@ -40,9 +40,9 @@ const Summarization = () => {
         <>
             <textarea
             className="border-2 border-blue-500  rounded-md p-2  focus:outline-none my-5"
-            rows={10}
+            rows={8}
 
-            cols={50}
+            cols={100}
             value={`Summary: ${summary}`} 
             readOnly
           />
