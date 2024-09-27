@@ -2,7 +2,7 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-scroll';
-import MedibriefLogo from '../assets/MedibriefLogo.png'
+import MedibriefLogo from '../assets/newLogo.jpg'
 
 const navigation = [
   { name: 'Home', href: 'home', current: true },

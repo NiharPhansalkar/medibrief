@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+button {
+    border: 2px solid #458FF6; /* Blue border */
+    color: #458FF6;            /* Blue text */
+    background-color: transparent; /* No background color */
+}
+
+button:hover {
+    background-color: #458FF6;  /* Blue background on hover */
+    color: white;               /* White text on hover */
+    border-color: #458FF6;      /* Keep the blue border on hover */
+}
+
+.heading-font {
+    font-family: "Mulish", sans-serif !important;
+    font-size: 36px;
+    font-weight: bold;
+}
+.subheading-font {
+    font-family: "Mulish", sans-serif !important;
+    font-size: 18px !important;
+    font-weight: lighter !important;
+  }
+
+.hr-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start !important; /* Ensure hr is left-aligned */
+}
+#horizontal-line{
+    border: 1px solid black;
+    width: 50px;
+    margin: 0 !important;
+}

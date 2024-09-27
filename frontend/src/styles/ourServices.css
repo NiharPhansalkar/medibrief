@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+hr{
+    border: 1px solid black;
+    width: 50px;
+    margin: auto !important;
+}
+.heading-font {
+    font-family: "Mulish", sans-serif;
+    font-size: 36px;
+    font-weight: bold;
+}
+.subheading-font {
+    font-family: "Mulish", sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+.services-container {
+    text-align: center;
+    padding: 40px 20px;
+    position: relative; /* For pseudo-element positioning */
+    overflow: hidden; /* Ensure no overflow beyond container */
+  
+    /* Default background settings */
+    background: none;
+  }
+  
+  .services-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleY(-1); /* Flip the image vertically and center horizontally */
+    width: 100%;
+    height: 100%;
+    background: url("C:/Users/HP/Desktop/TextSummarization/frontend/src/assets/BgImageServices.png") no-repeat center;
+    background-size: contain; /* Scale the image */
+    z-index: -1; /* Ensure it stays behind the content */
+  }
+
+  .services-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .services-description {
+    margin: 20px auto;
+    font-size: 16px;
+    color: #777;
+    max-width: 600px;
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(200px, 1fr)); /* Set a minimum width for columns */
+    gap: 30px 60px; /* Adjust gap */
+    margin-top: 40px;
+    justify-content: center; /* Center the grid */
+    max-width: 800px; /* Limit the total width of the grid */
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .service-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 350px;
+    margin: auto;
+    transition: box-shadow 0.3s ease;
+    text-align: left; /* Align the text to the left */
+  }
+  
+  .service-card h3, 
+  .service-card p {
+    text-align: left; /* Ensure all headings and paragraphs are left-aligned */
+  }
+
+  .service-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .service-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+  }
+  
+  .service-card h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .service-card p {
+    font-size: 14px;
+    color: #777;
+    line-height: 1.5;
+  }
+  
+  .learn-more-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 40px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .learn-more-btn:hover {
+    background-color: #0056b3;
+  }
+  .service-card > img {
+    width: 45px;
+  }
+
+  @media (max-width: 768px) {
+    .services-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
