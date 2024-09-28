@@ -3,7 +3,7 @@ import "../styles/introSection.css";
 
 const IntroSection = () => {
   return (
-    <div className="flex flex-row justify-evenly w-full p-4" id="introduction" id="scroll-about">
+    <div className="flex flex-row justify-evenly w-full p-4" id="introduction">
       <div className="w-[50%] mx-10">
         <img src={MedicalImage} alt="Medical Illustration" className="w-[750px]" />
       </div>

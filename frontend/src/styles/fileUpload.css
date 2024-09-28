@@ -1,0 +1,75 @@
+.file-btn {
+  background-color: #6f42c1;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.file-btn:hover {
+  background-color: #563d7c;
+}
+
+.file-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f3f3f3;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+  width: 350px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  color: #6f42c1;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.progress-bg {
+  background-color: #ddd;
+  height: 8px;
+  width: 100%;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.progress {
+  background-color: #6f42c1;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.close-icon, .check-icon {
+  cursor: pointer;
+  padding: 4px;
+}
+
+.upload-btn {
+  background-color: #6f42c1;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.upload-btn:hover {
+  background-color: #563d7c;
+}
+
