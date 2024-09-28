@@ -1,7 +1,14 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
-import { AiOutlineUpload, AiOutlineClose, AiOutlineCheck, AiOutlineFileImage } from 'react-icons/ai';
+import { AiOutlineUpload, AiOutlineCheck, AiOutlineFileImage } from 'react-icons/ai';
 import '../styles/fileUpload.css';
+import * as pdfjs from 'pdfjs-dist'
+import * as pdfjsLib from 'pdfjs-dist';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString()
 
 const Summarization = () => {
   const inputRef = useRef();
@@ -10,10 +17,19 @@ const Summarization = () => {
   const [uploadStatus, setUploadStatus] = useState('select');
   const [summary, setSummary] = useState('');
   const [showSummary, setShowSummary] = useState(false);
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [extractedText, setExtractedText] = useState('');
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     if (event.target.files && event.target.files.length > 0) {
-      setSelectedFile(event.target.files[0]);
+      const file = event.target.files[0];
+      setSelectedFile(file);
+      
+      if (file.type === 'application/pdf') {
+        await handlePDFUpload(file);
+      } else {
+        await handleImageUpload(file);
+      }
     }
   };
 
@@ -24,20 +40,16 @@ const Summarization = () => {
   const clearFileInput = () => {
     inputRef.current.value = '';
     setSelectedFile(null);
+    setSummary('');
     setProgress(0);
     setUploadStatus('select');
+    setShowSummary(false);
+    setIsSummarizing(false);
   };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-
-    if (!selectedFile) {
-      alert('Please select a file.');
-      return;
-    }
-
-    const validExtensions = ['png', 'jpg', 'jpeg'];
-    const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+  const handleImageUpload = async (file) => {
+    const validExtensions = ['png', 'jpg', 'jpeg', 'pdf'];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
     if (!validExtensions.includes(fileExtension)) {
       alert('Invalid file type. Please upload a .png, .jpg, or .jpeg file.');
       return;
@@ -45,9 +57,8 @@ const Summarization = () => {
 
     try {
       setUploadStatus('uploading');
-
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      formData.append('file', file);
 
       const response = await axios.post(
         'http://localhost:5000/noteUpload',
@@ -66,13 +77,18 @@ const Summarization = () => {
       );
 
       if (response.status === 200) {
-        const summ_res = await axios.post('http://localhost:5000/summarize', {
-          text: response.data.extracted_text,
-        });
-
-        setSummary(summ_res.data.result);
-        setShowSummary(true);
+        setProgress(100);
         setUploadStatus('done');
+        
+        // Extract and clean the text here
+        let extractedText = response.data.extracted_text;
+        extractedText = extractedText
+          .replace(/^document,\d+,\d+,/, '')  // Removes "document,x,y,"
+          .replace(/,\[object Object\]$/, '');  // Removes ",[object Object]" at the end
+        
+        setExtractedText(extractedText);
+        console.log(extractedText);
+
       } else {
         alert('File upload failed.');
         setUploadStatus('select');
@@ -80,6 +96,78 @@ const Summarization = () => {
     } catch (error) {
       console.error('Error uploading file:', error);
       setUploadStatus('select');
+    }
+  };
+
+  const handlePDFUpload = async (file) => {
+    try {
+      setUploadStatus('uploading');
+      const pdfText = await extractTextFromPDF(file);
+      setProgress(100);
+      setUploadStatus('done');
+      setExtractedText(pdfText);
+      console.log(pdfText);
+    } catch (error) {
+      console.error('Error processing PDF:', error);
+      alert('Failed to process PDF file.');
+      setUploadStatus('select');
+    }
+  };
+
+  const extractTextFromPDF = async (file) => {
+    const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+    let text = '';
+    
+    for (let i = 0; i < pdf.numPages; i++) {
+      const page = await pdf.getPage(i + 1);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(item => item.str).join(' ');
+      text += pageText + '\n'; // Add a newline after each page
+    }
+    
+    return text;
+  };
+
+  const handleSummarize = async () => {
+    setIsSummarizing(true);
+    setProgress(0);
+
+    // Artificial progress simulation
+    const progressInterval = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress < 90) {
+          return prevProgress + 10;
+        } else {
+          clearInterval(progressInterval);
+          return prevProgress;
+        }
+      });
+    }, 300);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/summarize',
+        { text: extractedText }
+      );
+
+      if (response.status === 200) {
+        clearInterval(progressInterval);
+        const resultArray = response.data.result;
+        let cleanedSummary = resultArray[0][3]; // Accessing the 4th item in the first sub-array
+        cleanedSummary = cleanedSummary
+          .replace(/^document,\d+,\d+,/, '')  // Removes "document,x,y,"
+          .replace(/,\[object Object\]$/, '');  // Removes ",[object Object]" at the end
+
+        setSummary(cleanedSummary);
+        setProgress(100);
+        setIsSummarizing(false);
+        setShowSummary(true);
+        setUploadStatus('summarized');
+      }
+    } catch (error) {
+      console.error('Error summarizing text:', error);
+      clearInterval(progressInterval);
+      setIsSummarizing(false);
     }
   };
 
@@ -114,27 +202,33 @@ const Summarization = () => {
                 </div>
               </div>
 
-              {uploadStatus === 'select' ? (
-                <button onClick={clearFileInput}>
-                  <AiOutlineClose size={20} className="close-icon" />
-                </button>
-              ) : (
+              {uploadStatus === 'uploading' ? (
+                <div className="check-circle">{`${progress}%`}</div>
+              ) : uploadStatus === 'done' || uploadStatus === 'summarized' ? (
                 <div className="check-circle">
-                  {uploadStatus === 'uploading' ? `${progress}%` : 
-                   uploadStatus === 'done' ? (
-                    <AiOutlineCheck size={20} className="check-icon" />
-                  ) : null}
+                  <AiOutlineCheck size={20} className="check-icon" />
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
 
-          <button className="upload-btn" onClick={handleUpload}>
-            {uploadStatus === 'select' || uploadStatus === 'uploading' ? 
-            <>
-              <AiOutlineUpload size={20} style={{ marginRight: '8px' }} /> Upload 
-            </> : 'Done'}
-          </button>
+          {uploadStatus === 'done' && (
+            <button className="file-btn mt-7" onClick={handleSummarize} disabled={isSummarizing}>
+              {isSummarizing ? (
+                `Summarizing... ${progress}%`
+              ) : (
+                <>
+                  <AiOutlineUpload size={20} style={{ marginRight: '8px' }} /> Summarize
+                </>
+              )}
+            </button>
+          )}
+
+          {uploadStatus === 'summarized' && (
+            <button className="file-btn mt-7" onClick={clearFileInput}>
+              Reset
+            </button>
+          )}
         </>
       )}
 
@@ -151,4 +245,3 @@ const Summarization = () => {
 };
 
 export default Summarization;
-
