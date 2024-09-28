@@ -28,7 +28,7 @@ const App = () => {
         <Route path="/intro" element={<div className="bg-white-200 h-full flex items-center"><IntroSection /></div>} />
         <Route path="/service" element={<div className="bg-white-200 h-full flex items-center"><OurServices /></div>} />
         <Route path="/john-snow" element={<div className="bg-gray-200 h-full flex items-center"><JohnSnow /></div>} />
-        <Route path="/summarization" element={<div className="bg-gray-200 h-full flex items-center"><Summarization /></div>} />
+        <Route path="/summarization" element={<div className="bg-gray-200 h-full flex flex-col items-center"><Summarization /><Footer/></div>} />
         {/* <Route path="/team" element={<div className="bg-gray-200 flex items-center"><Team /></div>} /> */}
         <Route path="/imgtotext" element={<div className="#FFF8E8 flex items-center justify-center min-h-screen "><ImgToText /></div>} />
       </Routes>

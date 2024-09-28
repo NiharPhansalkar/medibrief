@@ -84,8 +84,9 @@ const Summarization = () => {
   };
 
   return (
-    <div className="flex justify-start items-center flex-col w-full p-5 h-full" id="summarize">
-      <h2 className="font-medium text-6xl font-lilitaOne my-5">SUMMARIZE YOUR TEXT IMAGE</h2>
+    <div className="flex justify-start items-center flex-col w-full p-5 h-full bg-white" id="summarize">
+      <h2 className="heading-font my-5">Summarize Your Medical Reports</h2>
+      <h2 className="subheading-font mb-5">Click Below to Upload Your Medical Reports</h2>
 
       <input
         ref={inputRef}

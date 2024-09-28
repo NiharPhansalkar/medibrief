@@ -1,5 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+.heading-font {
+    font-family: "Mulish", sans-serif !important;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.subheading-font {
+    font-family: "Mulish", sans-serif !important;
+    font-size: 18px !important;
+    font-weight: lighter !important;
+}
+
 .file-btn {
-  background-color: #6f42c1;
+  background-color: rgb(59 130 246);
   color: white;
   padding: 10px 20px;
   font-size: 16px;
@@ -11,7 +25,8 @@
 }
 
 .file-btn:hover {
-  background-color: #563d7c;
+  background-color: white;
+  color: rgb(59 130 246);
 }
 
 .file-card {
@@ -27,7 +42,7 @@
 }
 
 .icon {
-  color: #6f42c1;
+  color: rgb(59 130 246);
 }
 
 .file-info {
@@ -46,7 +61,7 @@
 }
 
 .progress {
-  background-color: #6f42c1;
+  background-color: rgb(59 130 246);
   height: 100%;
   border-radius: 4px;
 }
@@ -57,7 +72,7 @@
 }
 
 .upload-btn {
-  background-color: #6f42c1;
+  background-color: rgb(59 130 246);
   color: white;
   padding: 10px 20px;
   font-size: 16px;
