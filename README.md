@@ -29,8 +29,6 @@ To run this project, you will need to add the following environment variables to
 
 `JSL license_keys.json`
 
-`JSL_API_KEY`
-
 `OPENAI_API_KEY`
 
 
