@@ -3,14 +3,14 @@ import os
 import subprocess
 import string
 import textwrap
-import json
-import os
 import numpy as np
 import pandas as pd
 from pyspark.ml import Pipeline, PipelineModel
 from pyspark.sql import SparkSession
 import pytesseract
 from PIL import Image
+import openai as openai_api  # Alias for OpenAI to avoid namespace conflicts
+import base64
 
 import sparknlp
 import sparknlp_jsl
@@ -22,25 +22,34 @@ from sparknlp.util import *
 from sparknlp.pretrained import ResourceDownloader
 from pyspark.sql import functions as F
 
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 # Load license keys from local JSON file
 with open("C:/Users/HP/Desktop/TextSummarization/license_keys.json") as f:
     license_keys = json.load(f)
+
 # Get the values from the loaded JSON
 PUBLIC_VERSION = license_keys["PUBLIC_VERSION"]
 JSL_VERSION = license_keys["JSL_VERSION"]
 SECRET = license_keys["SECRET"]
+
 # Defining license key-value pairs as local variables
 locals().update(license_keys)
+
 # Adding license key-value pairs to environment variables
 os.environ.update(license_keys)
+
 # List of packages to install
 packages = [
     "pyspark==3.2.3",
     f"spark-nlp=={PUBLIC_VERSION}",
     f"spark-nlp-jsl=={JSL_VERSION}"
 ]
+
 # Additional index URL
 extra_index_url = f"https://pypi.johnsnowlabs.com/{SECRET}"
+
 # Install each package using pip
 for package in packages:
     if "spark-nlp-jsl" in package:
@@ -50,49 +59,93 @@ for package in packages:
         install_command = f"py.exe -m pip install --upgrade {package}"
     # Run the pip install command using subprocess
     subprocess.run(install_command, shell=True)
+
 # Install Spark NLP Display Library for visualization
 subprocess.run(["py.exe", "-m", "pip", "install", "spark-nlp-display"])
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.expand_frame_repr', False)
 pd.set_option('max_colwidth', None)
+
 params = {"spark.driver.memory":"16G",
           "spark.kryoserializer.buffer.max":"2000M",
           "spark.serializer": "org.apache.spark.serializer.KryoSerializer",
           "spark.driver.maxResultSize":"2000M"}
+
+# Initialize Spark Session
 spark = sparknlp_jsl.start(license_keys['SECRET'], params=params)
 print ("Spark NLP Version :", sparknlp.version())
 print ("Spark NLP_JSL Version :", sparknlp_jsl.version())
-spark
+
 # Initialize Spark-NLP components
 document_assembler = DocumentAssembler() \
     .setInputCol('text') \
     .setOutputCol('document')
+
 med_summarizer = MedicalSummarizer() \
     .pretrained("summarizer_clinical_jsl_augmented") \
     .setInputCols("document") \
     .setOutputCol("summary") \
     .setMaxNewTokens(300) \
     .setMaxTextLength(1500)
-pipeline = Pipeline(
-    stages=[
-        document_assembler,
-        med_summarizer
-    ])
-model = pipeline.fit(spark.createDataFrame([[""]]).toDF("text"))
 
-from flask import Flask, request, jsonify
+pipeline = Pipeline(stages=[document_assembler, med_summarizer])
+
+model = pipeline.fit(spark.createDataFrame([[""]]).toDF("text"))
 
 # Create Flask app
 app = Flask(__name__)
-from flask_cors import CORS, cross_origin
 CORS(app)
 
+# Folder to store uploaded files
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Path to Tesseract-OCR executable
 pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
+
+# OpenAI API key using alias `openai_api`
+openai_api.api_key = ""
+
+# Function to encode image to base64
+def encode_image(image_data):
+    return base64.b64encode(image_data).decode('utf-8')
+
+# Function to process the OpenAI response and clean it
+def process_response(response):
+    text_content = response.choices[0].message.content.strip()
+    cleaned_text = text_content.replace('\n', ' ')  # Replace newline with a space
+    return cleaned_text
+
+@app.route('/handwritten-summarize', methods=['POST'])
+def handwritten_summ():
+    file = request.files['file']  # Changed 'image' to 'file'
+    if file:
+        image_data = file.read()
+        base64_img = f"data:image/png;base64,{encode_image(image_data)}"
+
+        # Call OpenAI API (using alias `openai_api`)
+        response = openai_api.chat.completions.create(
+            model='gpt-4o',
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Return the extracted text from the image. Only return text, no JSON."},
+                        {"type": "image_url", "image_url": {"url": base64_img}}
+                    ],
+                }
+            ],
+            max_tokens=500,
+        )
+
+        # Process response and return plain text
+        extracted_text = process_response(response)
+        return extracted_text, 200  # Return text directly
+    return jsonify({'error': 'No image uploaded'}), 400
 
 # Route to handle file upload
 @app.route('/noteUpload', methods=['POST'])
@@ -151,9 +204,11 @@ def summarize_text():
     data = request.get_json()
     text = data['text']
 
+    # Use the pre-trained model to summarize the input text
     light_model = model.transform(spark.createDataFrame([(text,)]).toDF("text"))
     light_result = light_model.select("document", "summary").collect()
- # Extract just the result from the response
+
+    # Extract the summarized result
     result_text = light_result[0]['summary']
     return jsonify({"result": result_text})
 
